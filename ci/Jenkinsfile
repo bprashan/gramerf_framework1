@@ -44,7 +44,7 @@ pipeline {
                     def args = "--ignore=gramine --disable-warnings --perf_config=${perf_config} --iterations=${iterations} --exec_mode=${exec_mode}"
                     echo "is encryption needed : $encryption"
                     
-                    if (perf_config.equals("container") {
+                    if (perf_config.equals("container")) {
                         args = args + " --curation_commit=${curation_commit}"
                     } else {
                         args = args + " --build_gramine=${build_gramine} --commit_id=${gramine_repo_commit_id}"
