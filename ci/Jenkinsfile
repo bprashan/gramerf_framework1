@@ -45,7 +45,7 @@ pipeline {
                     echo "is encryption needed : $encryption"
                     
                     if (perf_config.equals("container") {
-                        args = args + " --curation_commit=${curation_commit}
+                        args = args + " --curation_commit=${curation_commit}"
                     } else {
                         args = args + " --build_gramine=${build_gramine} --commit_id=${gramine_repo_commit_id}"
                     }
