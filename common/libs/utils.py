@@ -306,10 +306,14 @@ def write_to_report(workload_name, test_results):
         else:
             generic_dict[k] = test_results[k]
 
-    now = dt.isoformat(dt.now()).replace(":","_")
+    now = dt.isoformat(dt.now()).replace(":","-").split('.')[0]
     if workload_name == 'Tensorflow' and os.environ['encryption'] == '1':
-        workload_name = 'Tensorflow_Encrypted'
-    report_name = os.path.join(PERF_RESULTS_DIR, "Gramine_" + workload_name + "_Perf_Data_" + now + ".xlsx")
+        workload_name = 'tensorflow_encrypted'
+    if os.environ['perf_config'] == "baremetal":
+        commit_id = os.environ["commit_id"]
+    else:
+        commit_id = os.environ["curation_commit"]
+    report_name = os.path.join(PERF_RESULTS_DIR, "gramine_" + workload_name.lower() + "_perf_data_" + now + "_" + commit_id[:7] + ".xlsx")
     if not os.path.exists(PERF_RESULTS_DIR): os.makedirs(PERF_RESULTS_DIR)
     if os.path.exists(report_name):
         writer = pd.ExcelWriter(report_name, engine='openpyxl', mode='a')

@@ -14,6 +14,12 @@ def curated_setup():
     utils.exec_shell_cmd(CONTRIB_GIT_CMD)
     if os.environ["curation_commit"]:
         update_gramine_branch(os.environ["curation_commit"])
+        # This is to update the 'curation_commit' env var with
+        # the commit id to support perf dashboard implementation.
+        if os.environ["curation_commit"] == "master":
+            git_commit_cmd = "git ls-remote https://github.com/gramineproject/gramine master"
+            master_commit = utils.exec_shell_cmd(git_commit_cmd)
+            os.environ["curation_commit"] = master_commit.split()[0][:7]
 
 
 def copy_repo():

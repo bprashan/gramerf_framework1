@@ -32,6 +32,7 @@ def fresh_gramine_checkout():
         utils.exec_shell_cmd(f"git checkout {commit_id}")
     else:
         commit_id = utils.exec_shell_cmd("git rev-parse HEAD")
+        os.environ["commit_id"] = commit_id
 
     print("\n-- Checked out following Gramine commit: ", commit_id)
 

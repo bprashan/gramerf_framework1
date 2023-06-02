@@ -26,6 +26,10 @@ class TensorflowWorkload():
         
         print("\n-- Installing Tensorflow..")
         utils.exec_shell_cmd(TENSORFLOW_INSTALL_CMD)
+        
+        print("\n-- Downgrading Markupsafe to v2.0.1.")
+        markupsafe_cmd = "pip3 install markupsafe==2.0.1"
+        utils.exec_shell_cmd(markupsafe_cmd, None)
 
     def download_bert_models(self):
         if not os.path.exists('./models'):
