@@ -59,6 +59,12 @@ pipeline {
                     }
 
                     if (!run_specific_perf_test?.trim()){
+                        if (run.contains("pytorch_perf")){
+                            run = "pytorch_perf and not pytorch_perf_amx" 
+                        }
+                        echo " selected marker $run will be executed"
+                        exec_cmd = "python3 -m pytest -s -v -m $run $args"
+
                         echo " selected marker $run will be executed"
                         exec_cmd = "python3 -m pytest -s -v -m $run $args"
                     } else {

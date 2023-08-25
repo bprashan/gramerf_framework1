@@ -28,7 +28,7 @@ def restartNode(node_label){
 
 def getNodeName(){
 
-    if (run_specific_perf_test.contains("ov") || run.contains("ov")){
+    if (run_specific_perf_test.contains("ov") || run.contains("ov") || run_specific_perf_test.contains("ovms_perf") || run.contains("ovms_perf")){
         echo "open vino workload is selected ..."
         return 'graphene_wcity_02'
     } else if (run_specific_perf_test.contains("redis") || run.contains("redis")){
@@ -47,8 +47,11 @@ def getNodeName(){
     } else if (run_specific_perf_test.contains("memcached") || run.contains("memcached")){
         echo "memcached workload is selected ..."
         return 'graphene_perf_redis_taken_out_for_vasanth'
-    } else if (run_specific_perf_test.contains("mysql") || run.contains("mysql")){
-        echo "mysql workload is selected ..."
+    } else if (run_specific_perf_test.contains("pytorch_perf") || run.contains("pytorch_perf")){
+        echo "pytorch workload is selected ..."
+        return 'graphene_perf_redis_taken_out_for_vasanth'
+    } else if (run_specific_perf_test.contains("mysql") || run.contains("mysql") || run_specific_perf_test.contains("mariadb_perf") || run.contains("mariadb_perf")){
+        echo "mysql/mariadb workload is selected ..."
         return 'graphene_sklearn'
     }
 
