@@ -84,10 +84,8 @@ def preActions(){
 }
 
 def run_sklearn_perf(exec_cmd){
-    sh "mkdir sklearn_reports"
     for(int i=0; i<iterations.toInteger();i++) {
-        sh "$exec_cmd"
-        sh "cp -rf logs/ results/ sklearn_reports"
+        echo "$exec_cmd"
         sleep(time:120,unit:"SECONDS")
     }
 }

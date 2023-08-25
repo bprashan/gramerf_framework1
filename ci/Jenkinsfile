@@ -19,11 +19,6 @@ pipeline {
                     g_gramerf_lib = load(env.GRAMERF_GROOVY_LIB)
                     g_gramerf_lib.preActions()
                     g_nodelabel = g_gramerf_lib.getNodeName()
-                    if (g_gramerf_lib.restartNode(g_nodelabel)){
-                        echo "restarted $g_nodelabel successfully..."
-                    } else {
-                        error "Able to restart the execution node $g_nodelabel ..."
-                    }
                 }
             }
             post {
@@ -66,28 +61,16 @@ pipeline {
                         exec_cmd = "python3 -m pytest -s -v -m $run $args"
 
                         echo " selected marker $run will be executed"
-                        exec_cmd = "python3 -m pytest -s -v -m $run $args"
+                        echo "python3 -m pytest -s -v -m $run $args"
                     } else {
                         echo " specific performance test $run_specific_perf_test will be executed"
-                        exec_cmd = "python3 -m pytest -s -v -k $run_specific_perf_test $args"
+                        echo "python3 -m pytest -s -v -k $run_specific_perf_test $args"
                     }
                     
                     if(isSklearn.toBoolean()){
                         g_gramerf_lib.run_sklearn_perf(exec_cmd)
                     } else {
-                        sh "$exec_cmd"
-                    }
-                }
-            }
-            post {
-                always {
-                    script {
-                        if (isSklearn.toBoolean()){
-                            archiveArtifacts artifacts: 'sklearn_reports/**/*'
-                        } else {
-                            archiveArtifacts artifacts: 'logs/*, results/*'
-                        }
-                    // cleanWs()
+                        echo "$exec_cmd"
                     }
                 }
             }
