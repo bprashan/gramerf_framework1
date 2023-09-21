@@ -64,17 +64,9 @@ def preActions(){
     {
         build_gramine = build_gramine.substring(0,build_gramine.length() - 1);
     }
-    if(gramine_repo_commit_id.endsWith(","))
-    {
-        gramine_repo_commit_id = gramine_repo_commit_id.substring(0,gramine_repo_commit_id.length() - 1);
-    }
     if(encryption.endsWith(","))
     {
         encryption = encryption.substring(0,encryption.length() - 1).toBoolean();
-    }
-    if(curation_commit.endsWith(","))
-    {
-        curation_commit = curation_commit.substring(0,curation_commit.length() - 1);
     }
     if(tmpfs.endsWith(","))
     {

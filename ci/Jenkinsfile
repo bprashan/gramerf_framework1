@@ -36,13 +36,19 @@ pipeline {
                     cleanWs()
                     checkout scm
                     exec_cmd = ''
-                    def args = "--ignore=gramine --disable-warnings --perf_config=${perf_config} --iterations=${iterations} --exec_mode=${exec_mode}"
+                    def args = "--ignore=gramine --disable-warnings --perf_config=${perf_config} --iterations=${iterations} --exec_mode=${exec_mode} --gramine_commit=${gramine_commit}"
+                    if (gramine_repo?.trim()){
+                        args = args + " --gramine_repo=${gramine_repo}"
+                    }
                     echo "is encryption needed : $encryption"
                     
                     if (perf_config.equals("container")) {
-                        args = args + " --curation_commit=${curation_commit}"
+                        args = args + " --gsc_commit=${gsc_commit}"
+                        if (gsc_repo?.trim()){
+                            args = args + " --gsc_repo=${gsc_repo}"
+                        }
                     } else {
-                        args = args + " --build_gramine=${build_gramine} --commit_id=${gramine_repo_commit_id}"
+                        args = args + " --build_gramine=${build_gramine}"
                     }
                     
                     if (encryption) {
@@ -53,7 +59,7 @@ pipeline {
                         args = args + " --tmpfs=1"
                     }
 
-                    if (edmm) {
+                    if (edmm.toBoolean()) {
                         args = args + " --edmm=1"
                     }
 
