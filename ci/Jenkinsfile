@@ -53,6 +53,10 @@ pipeline {
                         args = args + " --tmpfs=1"
                     }
 
+                    if (edmm) {
+                        args = args + " --edmm=1"
+                    }
+
                     if (!run_specific_perf_test?.trim()){
                         if (run.contains("pytorch_perf")){
                             run = "pytorch_perf and not pytorch_perf_amx" 
