@@ -1,62 +1,10 @@
 properties([
     parameters([
-        [$class: 'ChoiceParameter', 
-            choiceType: 'PT_SINGLE_SELECT', 
-            description: 'Select Gramine installation mode (applicable for bare-metal performance benchmarking)', 
-            filterLength: 1, 
-            filterable: false, 
-            name: 'build_gramine', 
-            script: [
-                $class: 'GroovyScript', 
-                fallbackScript: [
-                    classpath: [], 
-                    sandbox: false, 
-                    script: 
-                        "return['']"
-                ], 
-                script: [
-                    classpath: [], 
-                    sandbox: false, 
-                    script: 
-                        "return['package', 'source:selected']"
-                ]
-            ]
-        ],
-        [$class: 'DynamicReferenceParameter', 
-            choiceType: 'ET_FORMATTED_HTML', 
-            description: 'Provide Gramine repo source commit id to checkout. By default, latest commit from master branch shall be cloned.(Applicable for Gramine source installation mode only)',
-            name: 'gramine_repo_commit_id', 
-            referencedParameters: 'build_gramine', 
-            script: 
-                [$class: 'GroovyScript', 
-                fallbackScript: [
-                        classpath: [], 
-                        sandbox: false, 
-                        script: "return['']"
-                        ], 
-                script: [
-                        classpath: [], 
-                        sandbox: false, 
-                        script: '''
-                        if (build_gramine.contains('source')){
-                            return """
-        <input name="value" id="build_gramine"  value="">
-        <img src="force/failed/load/image" style="display: none;" onerror=\'document.getElementById("build_gramine").closest(".form-group").style.display=""\'>
-                            """
-                        } else {
-                            return """
-        <input name="value" id="build_gramine"  value="">
-        <img src="force/failed/load/image" style="display: none;" onerror=\'document.getElementById("build_gramine").closest(".form-group").style.display="none"\'>
-                            """
-
-                        }
-                        '''
-                    ] 
-            ],
-        omitValueField: true
-        ],
+        choice(choices: ['source', 'package'], name: 'build_gramine'),
+        string(defaultValue: 'master', name: 'gramine_commit'),
+        string(defaultValue: 'master', name: 'gsc_commit'),
         string(defaultValue: '10', name: 'iterations'),
-        string(defaultValue: 'master', description: 'Enter gramine commit id. By default, pulls latest commit from the master branch.  (Applicable for container workload performance benchmarking)', name: 'curation_commit')
+        booleanParam('edmm')
     ])
 ])
 
@@ -72,7 +20,7 @@ pipeline{
                         stage("Run redis baremetal perf") {
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_repo_commit_id', value: gramine_repo_commit_id), string(name: 'run', value: 'redis_perf'), string(name: 'run_specific_perf_test', value: ''), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx-single-thread-non-exitless'), string(name: 'iterations', value: iterations), string(name: 'edmm', value: 'false')]
+                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine),  string(name: 'gramine_commit', value: gramine_commit), string(name: 'run', value: 'redis_perf'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx-single-thread-non-exitless'), string(name: 'iterations', value: iterations), booleanParam(name: 'edmm', value: edmm)]
                                     dir ('artifacts'){
                                         copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
                                     }
@@ -82,7 +30,7 @@ pipeline{
                         stage("Run redis container perf") {
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_repo_commit_id', value: gramine_repo_commit_id), string(name: 'curation_commit', value: curation_commit), string(name: 'run', value: 'redis_perf'), string(name: 'run_specific_perf_test', value: ''), string(name: 'exec_mode', value: 'native,gramine-sgx-single-thread-non-exitless'), string(name: 'iterations', value: iterations), string(name: 'edmm', value: 'false')]
+                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'gsc_commit', value: gsc_commit), string(name: 'run', value: 'redis_perf'), string(name: 'exec_mode', value: 'native,gramine-sgx-single-thread-non-exitless'), string(name: 'iterations', value: iterations), booleanParam(name: 'edmm', value: edmm)]
                                     dir ('artifacts'){
                                         copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
                                     }
@@ -92,7 +40,7 @@ pipeline{
                         stage("Run tf_serving perf") {
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_repo_commit_id', value: gramine_repo_commit_id), string(name: 'curation_commit', value: curation_commit), string(name: 'run', value: 'tf_serving_perf'), string(name: 'run_specific_perf_test', value: ''), string(name: 'exec_mode', value: 'native,gramine-sgx'), string(name: 'iterations', value: iterations), string(name: 'edmm', value: 'false')]
+                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'gsc_commit', value: gsc_commit), string(name: 'run', value: 'tf_serving_perf'), string(name: 'exec_mode', value: 'native,gramine-sgx'), string(name: 'iterations', value: iterations), booleanParam(name: 'edmm', value: edmm)]
                                     dir ('artifacts'){
                                         copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
                                     }
@@ -102,7 +50,7 @@ pipeline{
                         stage("Run memcached perf") {
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_repo_commit_id', value: gramine_repo_commit_id), string(name: 'run', value: 'memcached_perf'), string(name: 'run_specific_perf_test', value: ''), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx-single-thread-non-exitless'), string(name: 'iterations', value: iterations), string(name: 'edmm', value: 'false')]
+                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'gsc_commit', value: gsc_commit), string(name: 'run', value: 'memcached_perf'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx-single-thread-non-exitless'), string(name: 'iterations', value: iterations), booleanParam(name: 'edmm', value: edmm)]
                                     dir ('artifacts'){
                                         copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
                                     }
@@ -112,7 +60,7 @@ pipeline{
                         stage("Run pytorch perf") {
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_repo_commit_id', value: gramine_repo_commit_id), string(name: 'curation_commit', value: curation_commit), string(name: 'run', value: 'pytorch_perf'), string(name: 'run_specific_perf_test', value: ''), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: 3), string(name: 'edmm', value: 'false')]
+                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'gsc_commit', value: gsc_commit), string(name: 'run', value: 'pytorch_perf'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: 3), booleanParam(name: 'edmm', value: edmm)]
                                     dir ('artifacts'){
                                         copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
                                     }
@@ -126,7 +74,7 @@ pipeline{
                         stage("Run openvino Latency perf"){
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_repo_commit_id', value: gramine_repo_commit_id), string(name: 'run', value: 'ov_perf_latency'), string(name: 'run_specific_perf_test', value: ''), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: iterations), string(name: 'edmm', value: 'false')]
+                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'run', value: 'ov_perf_latency'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: iterations), booleanParam(name: 'edmm', value: edmm)]
                                     dir ('artifacts'){
                                         copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
                                     }
@@ -136,7 +84,7 @@ pipeline{
                         stage("Run Tensorflow perf") {
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_repo_commit_id', value: gramine_repo_commit_id), string(name: 'run', value: 'tf_perf'), string(name: 'run_specific_perf_test', value: ''), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: iterations), string(name: 'edmm', value: 'false')]
+                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'run', value: 'tf_perf'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: iterations), booleanParam(name: 'edmm', value: edmm)]
                                     dir ('artifacts'){
                                         copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
                                     }
@@ -146,7 +94,7 @@ pipeline{
                         stage("Run openvino throughput perf"){
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_repo_commit_id', value: gramine_repo_commit_id), string(name: 'run', value: 'ov_perf_throughput'), string(name: 'run_specific_perf_test', value: ''), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: iterations), string(name: 'edmm', value: 'false')]
+                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'run', value: 'ov_perf_throughput'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: iterations), booleanParam(name: 'edmm', value: edmm)]
                                     dir ('artifacts'){
                                         copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
                                     }
@@ -156,7 +104,7 @@ pipeline{
                         stage("Run Tensorflow encryption perf") {
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_repo_commit_id', value: gramine_repo_commit_id), string(name: 'run', value: 'tf_perf'), string(name: 'run_specific_perf_test', value: ''), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: iterations), string(name: 'encryption', value: 'true'), string(name: 'edmm', value: 'false')]
+                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'run', value: 'tf_perf'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: iterations), string(name: 'encryption', value: 'true'), booleanParam(name: 'edmm', value: edmm)]
                                     dir ('artifacts'){
                                         copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
                                     }
@@ -166,7 +114,7 @@ pipeline{
                         stage('Run ovms_perf'){
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_repo_commit_id', value: gramine_repo_commit_id), string(name: 'curation_commit', value: curation_commit), string(name: 'run', value: 'ovms_perf'), string(name: 'run_specific_perf_test', value: ''), string(name: 'exec_mode', value: 'native,gramine-sgx'), string(name: 'iterations', value: 20), string(name: 'encryption', value: 'true'), string(name: 'edmm', value: 'false')]
+                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'gsc_commit', value: gsc_commit), string(name: 'run', value: 'ovms_perf'), string(name: 'exec_mode', value: 'native,gramine-sgx'), string(name: 'iterations', value: 20), string(name: 'encryption', value: 'true'), booleanParam(name: 'edmm', value: edmm)]
                                     dir ('artifacts'){
                                         copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
                                     }
@@ -180,7 +128,7 @@ pipeline{
                         stage('sklearn_perf'){
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_repo_commit_id', value: gramine_repo_commit_id), string(name: 'run', value: 'sklearnex_perf'), string(name: 'run_specific_perf_test', value: ''), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: iterations), string(name: 'edmm', value: 'false')]
+                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'run', value: 'sklearnex_perf'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: iterations), booleanParam(name: 'edmm', value: edmm)]
                                     dir ('artifacts'){
                                         copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
                                     }
@@ -190,7 +138,7 @@ pipeline{
                         stage('mysql_perf'){
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_repo_commit_id', value: gramine_repo_commit_id), string(name: 'curation_commit', value: curation_commit), string(name: 'run', value: 'mysql_perf'), string(name: 'run_specific_perf_test', value: ''), string(name: 'exec_mode', value: 'native,gramine-sgx'), string(name: 'iterations', value: iterations), string(name: 'encryption', value: 'true'), string(name: 'tmpfs', value: 'true'), string(name: 'edmm', value: 'false')]
+                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'gsc_commit', value: gsc_commit), string(name: 'run', value: 'mysql_perf'), string(name: 'exec_mode', value: 'native,gramine-sgx'), string(name: 'iterations', value: iterations), string(name: 'encryption', value: 'true'), string(name: 'tmpfs', value: 'true'), booleanParam(name: 'edmm', value: edmm)]
                                     dir ('artifacts'){
                                         copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
                                     }
@@ -200,7 +148,7 @@ pipeline{
                         stage('mariadb_perf'){
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_repo_commit_id', value: gramine_repo_commit_id), string(name: 'curation_commit', value: curation_commit), string(name: 'run', value: 'mariadb_perf'), string(name: 'run_specific_perf_test', value: ''), string(name: 'exec_mode', value: 'native,gramine-sgx'), string(name: 'iterations', value: iterations), string(name: 'encryption', value: 'true'), string(name: 'tmpfs', value: 'true'), string(name: 'edmm', value: 'false')]
+                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'gsc_commit', value: gsc_commit), string(name: 'run', value: 'mariadb_perf'), string(name: 'exec_mode', value: 'native,gramine-sgx'), string(name: 'iterations', value: iterations), string(name: 'encryption', value: 'true'), string(name: 'tmpfs', value: 'true'), booleanParam(name: 'edmm', value: edmm)]
                                     dir ('artifacts'){
                                         copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
                                     }
