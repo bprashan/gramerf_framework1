@@ -20,50 +20,35 @@ pipeline{
                         stage("Run redis baremetal perf") {
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine),  string(name: 'gramine_commit', value: gramine_commit), string(name: 'run', value: 'redis_perf'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx-single-thread-non-exitless'), string(name: 'iterations', value: iterations), booleanParam(name: 'edmm', value: edmm)]
-                                    dir ('artifacts'){
-                                        copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
-                                    }
-                                }
+                                    def job = build propagate: false, job: 'bprashan_gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine),  string(name: 'gramine_commit', value: gramine_commit), string(name: 'run', value: 'redis_perf'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx-single-thread-non-exitless'), string(name: 'iterations', value: iterations), booleanParam(name: 'edmm', value: edmm)]
+                                   }
                             }
                         }
                         stage("Run redis container perf") {
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'gsc_commit', value: gsc_commit), string(name: 'run', value: 'redis_perf'), string(name: 'exec_mode', value: 'native,gramine-sgx-single-thread-non-exitless'), string(name: 'iterations', value: iterations), booleanParam(name: 'edmm', value: edmm)]
-                                    dir ('artifacts'){
-                                        copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
-                                    }
+                                    def job = build propagate: false, job: 'bprashan_gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'gsc_commit', value: gsc_commit), string(name: 'run', value: 'redis_perf'), string(name: 'exec_mode', value: 'native,gramine-sgx-single-thread-non-exitless'), string(name: 'iterations', value: iterations), booleanParam(name: 'edmm', value: edmm)]
                                 }
                             }
                         }
                         stage("Run tf_serving perf") {
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'gsc_commit', value: gsc_commit), string(name: 'run', value: 'tf_serving_perf'), string(name: 'exec_mode', value: 'native,gramine-sgx'), string(name: 'iterations', value: iterations), booleanParam(name: 'edmm', value: edmm)]
-                                    dir ('artifacts'){
-                                        copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
-                                    }
+                                    def job = build propagate: false, job: 'bprashan_gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'gsc_commit', value: gsc_commit), string(name: 'run', value: 'tf_serving_perf'), string(name: 'exec_mode', value: 'native,gramine-sgx'), string(name: 'iterations', value: iterations), booleanParam(name: 'edmm', value: edmm)]
                                 }
                             }
                         }
                         stage("Run memcached perf") {
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'gsc_commit', value: gsc_commit), string(name: 'run', value: 'memcached_perf'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx-single-thread-non-exitless'), string(name: 'iterations', value: iterations), booleanParam(name: 'edmm', value: edmm)]
-                                    dir ('artifacts'){
-                                        copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
-                                    }
+                                    def job = build propagate: false, job: 'bprashan_gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'gsc_commit', value: gsc_commit), string(name: 'run', value: 'memcached_perf'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx-single-thread-non-exitless'), string(name: 'iterations', value: iterations), booleanParam(name: 'edmm', value: edmm)]
                                 }
                             }
                         }
                         stage("Run pytorch perf") {
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'gsc_commit', value: gsc_commit), string(name: 'run', value: 'pytorch_perf'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: 3), booleanParam(name: 'edmm', value: edmm)]
-                                    dir ('artifacts'){
-                                        copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
-                                    }
+                                    def job = build propagate: false, job: 'bprashan_gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'gsc_commit', value: gsc_commit), string(name: 'run', value: 'pytorch_perf'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: '3'), booleanParam(name: 'edmm', value: edmm)]
                                 }
                             }
                         }
@@ -74,50 +59,35 @@ pipeline{
                         stage("Run openvino Latency perf"){
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'run', value: 'ov_perf_latency'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: iterations), booleanParam(name: 'edmm', value: edmm)]
-                                    dir ('artifacts'){
-                                        copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
-                                    }
+                                    def job = build propagate: false, job: 'bprashan_gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'run', value: 'ov_perf_latency'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: iterations), booleanParam(name: 'edmm', value: edmm)]
                                 }
                             }
                         }
                         stage("Run Tensorflow perf") {
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'run', value: 'tf_perf'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: iterations), booleanParam(name: 'edmm', value: edmm)]
-                                    dir ('artifacts'){
-                                        copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
-                                    }
+                                    def job = build propagate: false, job: 'bprashan_gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'run', value: 'tf_perf'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: iterations), booleanParam(name: 'edmm', value: edmm)]
                                 }
                             }
                         }
                         stage("Run openvino throughput perf"){
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'run', value: 'ov_perf_throughput'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: iterations), booleanParam(name: 'edmm', value: edmm)]
-                                    dir ('artifacts'){
-                                        copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
-                                    }
+                                    def job = build propagate: false, job: 'bprashan_gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'run', value: 'ov_perf_throughput'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: iterations), booleanParam(name: 'edmm', value: edmm)]
                                 }
                             }
                         }
                         stage("Run Tensorflow encryption perf") {
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'run', value: 'tf_perf'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: iterations), string(name: 'encryption', value: 'true'), booleanParam(name: 'edmm', value: edmm)]
-                                    dir ('artifacts'){
-                                        copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
-                                    }
+                                    def job = build propagate: false, job: 'bprashan_gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'run', value: 'tf_perf'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: iterations), string(name: 'encryption', value: 'true'), booleanParam(name: 'edmm', value: edmm)]
                                 }
                             }
                         }
                         stage('Run ovms_perf'){
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'gsc_commit', value: gsc_commit), string(name: 'run', value: 'ovms_perf'), string(name: 'exec_mode', value: 'native,gramine-sgx'), string(name: 'iterations', value: 20), string(name: 'encryption', value: 'true'), booleanParam(name: 'edmm', value: edmm)]
-                                    dir ('artifacts'){
-                                        copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
-                                    }
+                                    def job = build propagate: false, job: 'bprashan_gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'gsc_commit', value: gsc_commit), string(name: 'run', value: 'ovms_perf'), string(name: 'exec_mode', value: 'native,gramine-sgx'), string(name: 'iterations', value: '20'), string(name: 'encryption', value: 'true'), booleanParam(name: 'edmm', value: edmm)]
                                 }
                             }
                         }
@@ -128,30 +98,21 @@ pipeline{
                         stage('sklearn_perf'){
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'run', value: 'sklearnex_perf'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: iterations), booleanParam(name: 'edmm', value: edmm)]
-                                    dir ('artifacts'){
-                                        copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
-                                    }
+                                    def job = build propagate: false, job: 'bprashan_gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'baremetal'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'run', value: 'sklearnex_perf'), string(name: 'exec_mode', value: 'native,gramine-direct,gramine-sgx'), string(name: 'iterations', value: '1'), booleanParam(name: 'edmm', value: edmm)]
                                 }
                             }
                         }
                         stage('mysql_perf'){
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'gsc_commit', value: gsc_commit), string(name: 'run', value: 'mysql_perf'), string(name: 'exec_mode', value: 'native,gramine-sgx'), string(name: 'iterations', value: iterations), string(name: 'encryption', value: 'true'), string(name: 'tmpfs', value: 'true'), booleanParam(name: 'edmm', value: edmm)]
-                                    dir ('artifacts'){
-                                        copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
-                                    }
+                                    def job = build propagate: false, job: 'bprashan_gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'gsc_commit', value: gsc_commit), string(name: 'run', value: 'mysql_perf'), string(name: 'exec_mode', value: 'native,gramine-sgx'), string(name: 'iterations', value: iterations), string(name: 'encryption', value: 'true'), string(name: 'tmpfs', value: 'true'), booleanParam(name: 'edmm', value: edmm)]
                                 }
                             }
                         }
                         stage('mariadb_perf'){
                             steps{
                                 script{
-                                    def job = build propagate: false, job: 'gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'gsc_commit', value: gsc_commit), string(name: 'run', value: 'mariadb_perf'), string(name: 'exec_mode', value: 'native,gramine-sgx'), string(name: 'iterations', value: iterations), string(name: 'encryption', value: 'true'), string(name: 'tmpfs', value: 'true'), booleanParam(name: 'edmm', value: edmm)]
-                                    dir ('artifacts'){
-                                        copyArtifacts projectName: 'gramerf_performance_benchmarking', selector: specific("${job.number}")
-                                    }
+                                    def job = build propagate: false, job: 'bprashan_gramerf_performance_benchmarking', parameters: [string(name: 'perf_config', value: 'container'), string(name: 'build_gramine', value: build_gramine), string(name: 'gramine_commit', value: gramine_commit), string(name: 'gsc_commit', value: gsc_commit), string(name: 'run', value: 'mariadb_perf'), string(name: 'exec_mode', value: 'native,gramine-sgx'), string(name: 'iterations', value: iterations), string(name: 'encryption', value: 'true'), string(name: 'tmpfs', value: 'true'), booleanParam(name: 'edmm', value: edmm)]
                                 }
                             }
                         }
@@ -160,7 +121,6 @@ pipeline{
             }
             post {
                 success {
-                    archiveArtifacts artifacts: 'artifacts/**', followSymlinks: false
                     cleanWs()
                 }
             }
